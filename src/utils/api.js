@@ -6,7 +6,9 @@ module.exports = {
     sendMessage: async (chatId, message) => {
         await axios.post(`${baseUrl}/${botToken}/sendMessage`, {
             chat_id: chatId,
-            text: message
+            text: message,
+            disable_web_page_preview: true,
+            parse_mode: 'Markdown'
         })
     }
 }

@@ -1,16 +1,22 @@
 const axios = require("axios"),
-    mapUrl = `https://tugc.2gis.com/1.0/layers/user?project=almaty&layers=["comment"]`,
-    api = require('../utils/api')
+    mapUrl = `https://tugc.2gis.com/1.0/layers/user?project=almaty&layers=["comment"]`
 
 module.exports = {
     getComments: async () => {
-        let comments = await axios.get(mapUrl)
-        let msg = ''
-        comments.data.forEach( item => {
-            msg += `${item.comment}\n`
+        let comments = (await axios.get(mapUrl)).data
+        let commentsList = []
+        comments.forEach( item => {
+            const encodedCoords = encodeURIComponent(item.location.coordinates.join(','))
+            commentsList.push({
+                id: item.id,
+                comment: item.comment,
+                location: `https://2gis.kz?m=${encodedCoords}%2f15&traffic`,
+                user: item.user.name,
+                feedback: item.feedbacks,
+                timestamp: new Date(item.timestamp * 1000)
+            })
         })
-        console.log(msg)
-        await api.sendMessage(process.env.CHAT_ID, msg)
+        return commentsList
     }
 
 }
