@@ -3,25 +3,30 @@ require('dotenv').config()
 const app = require('express')(),
     bodyParser = require('body-parser'),
     PORT = process.env.PORT || 8080,
-    commandParser = require("./src/services/CommentParser"),
-    api = require("./src/utils/api");
+    MessageService = require("./src/services/MessageService"),
+    api = require("./src/utils/api"),
+    ServiceError = require('./src/utils/ServiceError'),
+    catchError = require('./src/utils/catchError')
 
 app.use(bodyParser.json());
 
-setInterval(async () => {
-    const comments = await commandParser.getComments()
-
-    let message = ''
-    for (let comment of comments) {
-        message += `*${comment.comment.replaceAll('*', '\*')}*\n\n`
-        message += `[Link to map place](${comment.location})\n`
-        message += `*likes: ${comment.feedback.likes}*, dislikes: ${comment.feedback.dislikes}\n`
-        message += `*${comment.user}* at ${comment.timestamp.toLocaleTimeString()}`
-
-        await api.sendMessage(process.env.CHAT_ID, message)
-        message = ''
+app.post('/', catchError(async (req, res, next) => {
+    if (req.body?.message?.text?.trim() === '/get') {
+        await MessageService.sendCommentsMessages(process.env.CHAT_ID)
+    } else {
+        throw new ServiceError(404, 'Unknown command')
     }
-}, process.env.UPDATE_COMMENTS_PERIOD * 60 * 1000)
+    res.sendStatus(200)
+}))
+
+app.use( async(err, req, res, next) => {
+    if (err instanceof ServiceError) {
+        await api.sendMessage(process.env.CHAT_ID, err.message)
+    } else {
+        next()
+    }
+    res.sendStatus(200)
+})
 
 app.listen(PORT, () => {
     process.title = 'comments2gis'
