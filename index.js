@@ -23,6 +23,7 @@ app.use( async(err, req, res, next) => {
     if (err instanceof ServiceError) {
         await api.sendMessage(process.env.CHAT_ID, err.message)
     } else {
+        console.log(err)
         next()
     }
     res.sendStatus(200)

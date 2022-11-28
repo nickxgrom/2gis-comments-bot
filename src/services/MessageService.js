@@ -1,6 +1,8 @@
 const CommentParser = require("./CommentParser");
 const api = require("../utils/api");
 
+let temporaryViewedCommentsList = []
+
 const createCommentMessage = (comment) => {
     let message = ''
     message += `*${comment.comment.replaceAll('*', '%')}*\n\n`
@@ -13,7 +15,20 @@ const createCommentMessage = (comment) => {
 
 module.exports = {
     sendCommentsMessages: async (chatId) => {
-        const comments = await CommentParser.getComments()
+        let comments = await CommentParser.getComments()
+        comments = comments.filter(comment => {
+            const isCommentAlreadySent = temporaryViewedCommentsList.find(item => item === comment.id)
+            if (!isCommentAlreadySent) {
+                temporaryViewedCommentsList.push(comment.id)
+            }
+
+            return !isCommentAlreadySent
+        })
+
+        if (!comments.length) {
+            await api.sendMessage(chatId, 'No new messages')
+        }
+
         for (let comment of comments) {
             await api.sendMessage(chatId, createCommentMessage(comment))
         }
