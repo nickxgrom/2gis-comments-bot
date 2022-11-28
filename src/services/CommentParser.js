@@ -5,6 +5,7 @@ module.exports = {
     getComments: async () => {
         let comments = (await axios.get(mapUrl)).data
         let commentsList = []
+        console.log(comments)
         comments.forEach( item => {
             const encodedCoords = encodeURIComponent(item.location.coordinates.join(','))
             commentsList.push({
