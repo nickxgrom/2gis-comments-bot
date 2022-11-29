@@ -3,26 +3,22 @@ const axios = require("axios"),
 
 module.exports = {
     getComments: async () => {
-        axios.get(mapUrl).then(res => {
-            console.log(res)
-        })
-            .catch(err => {
-                console.log(err)
+        let comments = await axios.get(mapUrl).catch(err => {console.log(err)})
+        comments = comments.data
+        let commentsList = []
+        console.log(comments)
+        comments.forEach( item => {
+            const encodedCoords = encodeURIComponent(item.location.coordinates.join(','))
+            commentsList.push({
+                id: item.id,
+                comment: item.comment,
+                location: `https://2gis.kz?m=${encodedCoords}%2f15&traffic`,
+                user: item.user.name,
+                feedback: item.feedbacks,
+                timestamp: new Date(item.timestamp * 1000)
             })
-        // let commentsList = []
-        // console.log(comments)
-        // comments.forEach( item => {
-        //     const encodedCoords = encodeURIComponent(item.location.coordinates.join(','))
-        //     commentsList.push({
-        //         id: item.id,
-        //         comment: item.comment,
-        //         location: `https://2gis.kz?m=${encodedCoords}%2f15&traffic`,
-        //         user: item.user.name,
-        //         feedback: item.feedbacks,
-        //         timestamp: new Date(item.timestamp * 1000)
-        //     })
-        // })
-        // return commentsList
+        })
+        return commentsList
     }
 
 }
