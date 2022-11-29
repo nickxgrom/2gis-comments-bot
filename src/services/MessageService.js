@@ -15,7 +15,7 @@ const createCommentMessage = (comment) => {
 
 module.exports = {
     sendCommentsMessages: async (chatId) => {
-        let comments = await CommentParser.getComments()
+        let comments = await CommentParser.getComments().catch(err => {console.log(err)})
         comments = comments.filter(comment => {
             const isCommentAlreadySent = temporaryViewedCommentsList.find(item => item === comment.id)
             if (!isCommentAlreadySent) {
@@ -26,11 +26,11 @@ module.exports = {
         })
 
         if (!comments.length) {
-            await api.sendMessage(chatId, 'No new messages')
+            await api.sendMessage(chatId, 'No new messages').catch(err => {console.log(err)})
         }
 
         for (let comment of comments) {
-            await api.sendMessage(chatId, createCommentMessage(comment))
+            await api.sendMessage(chatId, createCommentMessage(comment)).catch(err => {console.log(err)})
         }
     }
 }

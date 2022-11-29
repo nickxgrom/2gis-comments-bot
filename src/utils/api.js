@@ -9,6 +9,6 @@ module.exports = {
             text: message,
             disable_web_page_preview: true,
             parse_mode: 'Markdown'
-        })
+        }).catch(err => {console.log(err)})
     }
 }

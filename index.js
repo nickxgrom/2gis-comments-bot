@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 app.post('/', catchError(async (req, res, next) => {
     if (req.body?.message?.text?.trim() === '/get') {
-        await MessageService.sendCommentsMessages(process.env.CHAT_ID)
+        await MessageService.sendCommentsMessages(process.env.CHAT_ID).catch(err => {console.log(err)})
     } else {
         throw new ServiceError(404, 'Unknown command')
     }
@@ -21,7 +21,7 @@ app.post('/', catchError(async (req, res, next) => {
 
 app.use( async(err, req, res, next) => {
     if (err instanceof ServiceError) {
-        await api.sendMessage(process.env.CHAT_ID, err.message)
+        await api.sendMessage(process.env.CHAT_ID, err.message).catch(err => {console.log(err)})
     } else {
         console.log(err)
         next()
