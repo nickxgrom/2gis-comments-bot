@@ -3,7 +3,7 @@ const axios = require("axios"),
 
 module.exports = {
     getComments: async () => {
-        await axios.get(mapUrl).then(res => {
+        axios.get(mapUrl).then(res => {
             console.log(res)
         })
             .catch(err => {
