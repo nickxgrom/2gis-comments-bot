@@ -3,7 +3,7 @@ const axios = require("axios"),
 
 module.exports = {
     getComments: async () => {
-        let comments = (await axios.get(mapUrl)).data
+        let comments = await axios.get(mapUrl).data
         let commentsList = []
         console.log(comments)
         comments.forEach( item => {
