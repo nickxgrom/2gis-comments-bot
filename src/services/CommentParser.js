@@ -1,10 +1,9 @@
 const axios = require("axios"),
-    mapUrl = `https://tugc.2gis.com/1.0/layers/user?project=almaty&layers=["comment"]`
+    mapUrl = `https://tugc.2gis.com/1.0/layers/user?project=almaty&layers=["comment","other"]`
 
 module.exports = {
     getComments: async () => {
-        let comments = await axios.get(mapUrl).catch(err => {console.log(err)})
-        comments = comments.data
+        let comments = (await axios.get(mapUrl)).data.filter(item => item.type === 'comment')
         let commentsList = []
         console.log(comments)
         comments.forEach( item => {
