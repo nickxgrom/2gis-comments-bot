@@ -4,7 +4,10 @@ const axios = require("axios"),
 module.exports = {
     getComments: async () => {
         let comments = (await axios.get(mapUrl, {
-            responseEncoding: 'utf8'
+            responseEncoding: 'utf8',
+            headers: {
+                'accept-encoding': null
+            }
         })).data
         let commentsList = []
         console.log(comments)
